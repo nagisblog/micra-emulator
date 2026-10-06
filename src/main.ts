@@ -2,12 +2,14 @@ import './styles/base.css';
 import './styles/layout.css';
 import './styles/modal.css';
 import './styles/device.css';
+import './styles/tutorial.css';
 import { DIGIT_COUNT, Micra, formatDigits, placeValue } from './core/micra';
 import { detectLang, messages, saveLang, type Lang } from './i18n';
 import { buildDevice } from './ui/device';
 import { Drum, nextSeq } from './ui/drum';
 import { ResetLever } from './ui/lever';
 import { SliderKey } from './ui/slider';
+import { TutorialController } from './ui/tutorial-ui';
 
 const ARTICLE_URL = 'https://www.nagisblog.com/posts/micra-addiator/';
 const CARRY_DELAY_MS = 60;
@@ -34,6 +36,7 @@ app.innerHTML = `
   </header>
   <main class="site-main">
     <p class="hint" data-i18n="hint"></p>
+    <div class="tutorial-popup" id="tutorial-popup" aria-live="polite" hidden></div>
     <div class="stage"></div>
     <p class="kbd-help" data-i18n="keyboardHelp"></p>
     <div class="sr-only" aria-live="polite" id="live"></div>
@@ -59,7 +62,8 @@ app.innerHTML = `
       </div>
       <div class="modal-view" data-modal-view="tutorial" hidden>
         <h2 class="modal-title" data-i18n="tutorialBtn"></h2>
-        <p class="modal-body" data-i18n="tutorialPlaceholder"></p>
+        <p class="modal-body" id="tutorial-intro"></p>
+        <div class="tutorial-course-list" id="tutorial-courses"></div>
         <div class="modal-actions">
           <button type="button" class="btn" data-close-modal data-i18n="closeBtn"></button>
         </div>
@@ -72,6 +76,9 @@ const device = buildDevice();
 app.querySelector('.stage')!.appendChild(device.root);
 const live = app.querySelector<HTMLElement>('#live')!;
 const modal = app.querySelector<HTMLDialogElement>('#info-modal')!;
+const tutorialPopup = app.querySelector<HTMLElement>('#tutorial-popup')!;
+const tutorialCourses = app.querySelector<HTMLElement>('#tutorial-courses')!;
+const tutorialIntro = app.querySelector<HTMLElement>('#tutorial-intro')!;
 
 type ModalView = 'welcome' | 'guide' | 'tutorial';
 function openModal(view: ModalView): void {
@@ -126,6 +133,22 @@ function announce(): void {
   }, 300);
 }
 
+function forceReset(): void {
+  micra.reset();
+  renderDrums(null);
+  announce();
+}
+
+const tutorial = new TutorialController({
+  device,
+  popupEl: tutorialPopup,
+  courseListEl: tutorialCourses,
+  getLang: () => lang,
+  getDeviceValue: () => micra.value,
+  onStartCourseModalClose: () => modal.close(),
+  onForceReset: forceReset,
+});
+
 // ---- スライドキー ----
 const sliders = device.strips.map(
   (strip, i) =>
@@ -139,6 +162,10 @@ const sliders = device.strips.map(
         },
         onCommit(index, steps) {
           pending.delete(index);
+          if (!tutorial.onPullCommit(index, steps)) {
+            renderDrums(null);
+            return;
+          }
           micra.pull(index, steps);
           renderDrums(index);
           if (steps > 0) announce();
@@ -149,9 +176,8 @@ const sliders = device.strips.map(
 );
 
 function reset(): void {
-  micra.reset();
-  renderDrums(null);
-  announce();
+  if (!tutorial.onResetAttempt()) return;
+  forceReset();
 }
 
 const lever = new ResetLever(device.lever, device.root, reset, reducedMotion);
@@ -189,6 +215,9 @@ function applyLang(next: Lang): void {
     const v = t[key];
     if (typeof v === 'string') node.textContent = v;
   });
+  tutorialIntro.textContent = t.tutorial.modalIntro;
+  tutorial.refreshLang();
+
   const guideContent = app.querySelector<HTMLElement>('#guide-content')!;
   guideContent.replaceChildren(
     ...t.guideSections.map((sec) => {

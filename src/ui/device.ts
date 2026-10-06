@@ -13,6 +13,7 @@ export const PLATE_LABELS = ['拾万', '万', '千', '百', '拾', '円'] as con
 
 export interface DeviceRefs {
   root: HTMLElement;
+  plateLabels: HTMLElement[];
   slots: HTMLElement[];
   strips: HTMLElement[];
   reels: HTMLElement[];
@@ -53,10 +54,11 @@ export function buildDevice(): DeviceRefs {
   // 桁ラベル板
   const plate = el('div', 'plate', root);
   plate.setAttribute('aria-hidden', 'true');
-  PLATE_LABELS.forEach((label, i) => {
+  const plateLabels = PLATE_LABELS.map((label, i) => {
     const s = el('span', 'plate-label', plate);
     place(s, COLUMN_CX[i]!);
     s.textContent = label;
+    return s;
   });
 
   // 上側パネルのネジ
@@ -125,5 +127,5 @@ export function buildDevice(): DeviceRefs {
   lever.tabIndex = 0;
   lever.setAttribute('role', 'button');
 
-  return { root, slots, strips, reels, lever, subtractMark };
+  return { root, plateLabels, slots, strips, reels, lever, subtractMark };
 }

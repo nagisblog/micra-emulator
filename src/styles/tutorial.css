@@ -1,0 +1,363 @@
+/* ---------- チュートリアル（モーダル選択・吹き出しポップアップ・本体ハイライト） ---------- */
+
+.tutorial-course-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 18px;
+}
+
+.tutorial-course-card {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 14px 16px;
+  border-radius: 12px;
+  border: 1.5px solid color-mix(in srgb, var(--accent) 28%, transparent);
+  background: color-mix(in srgb, var(--accent) 6%, transparent);
+}
+
+.tutorial-course-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.tutorial-course-title {
+  margin: 0;
+  font-size: 0.98rem;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.tutorial-course-badge {
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--accent) 16%, transparent);
+  color: var(--text);
+}
+
+.tutorial-course-formula {
+  font-family: ui-monospace, 'Cascadia Mono', 'Segoe UI Mono', monospace;
+  font-size: 0.92rem;
+  font-weight: 700;
+  color: var(--accent);
+}
+
+.tutorial-course-summary {
+  margin: 0 0 6px;
+  font-size: 0.84rem;
+  line-height: 1.55;
+  color: var(--muted);
+}
+
+.tutorial-course-actions {
+  display: flex;
+  justify-content: flex-end;
+}
+
+/* ---------- 画面上部の吹き出しポップアップ ---------- */
+
+body.tutorial-mode .hint {
+  display: none;
+}
+
+body.tutorial-mode .stage {
+  --dw: min(84vw, 375px, calc((100dvh - 285px) / 1.47));
+}
+
+.tutorial-popup {
+  position: relative;
+  width: min(94vw, 460px);
+  margin: 2px 0 14px;
+  padding: 11px 14px 12px;
+  border-radius: 12px;
+  border: 2px solid var(--focus);
+  background: color-mix(in srgb, var(--bg) 94%, var(--focus));
+  box-shadow: 0 8px 24px rgb(0 0 0 / 0.18);
+  z-index: 10;
+}
+
+/* 対象列・レバーを指す吹き出しの三角しっぽ */
+.tutorial-popup::before,
+.tutorial-popup::after {
+  content: '';
+  position: absolute;
+  top: 100%;
+  left: var(--pointer-x, 50%);
+  transform: translateX(-50%);
+  border-style: solid;
+  pointer-events: none;
+  transition: left 220ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.tutorial-popup::before {
+  border-width: 9px 9px 0 9px;
+  border-color: var(--focus) transparent transparent transparent;
+}
+
+.tutorial-popup::after {
+  margin-top: -2px;
+  border-width: 7px 7px 0 7px;
+  border-color: color-mix(in srgb, var(--bg) 94%, var(--focus)) transparent transparent transparent;
+}
+
+.tutorial-popup[data-completed='true']::before,
+.tutorial-popup[data-completed='true']::after {
+  display: none;
+}
+
+.tutorial-popup-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+
+.tutorial-popup-meta {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.tutorial-formula-pill {
+  font-family: ui-monospace, 'Cascadia Mono', 'Segoe UI Mono', monospace;
+  font-size: 0.76rem;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: var(--navy);
+  color: var(--cream);
+}
+
+.tutorial-step-count {
+  font-size: 0.74rem;
+  font-weight: 700;
+  color: var(--muted);
+  letter-spacing: 0.03em;
+}
+
+.tutorial-exit-btn {
+  border: 1px solid color-mix(in srgb, var(--accent) 40%, transparent);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--muted);
+  font: inherit;
+  font-size: 0.74rem;
+  font-weight: 600;
+  padding: 2px 9px;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.tutorial-exit-btn:hover {
+  color: var(--text);
+  border-color: var(--accent);
+}
+
+.tutorial-progress {
+  height: 4px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--accent) 16%, transparent);
+  overflow: hidden;
+  margin-bottom: 8px;
+}
+
+.tutorial-progress-bar {
+  height: 100%;
+  background: #d97706;
+  border-radius: 999px;
+  transition: width 240ms ease;
+}
+
+.tutorial-phase-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 4px 8px;
+  margin-bottom: 4px;
+}
+
+.tutorial-phase {
+  font-size: 0.86rem;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.tutorial-target-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 6px;
+  background: #fde68a;
+  color: #1f1f22;
+  border: 1px solid #d97706;
+}
+
+.tutorial-target-chip[data-color='red'] {
+  background: #fee2e2;
+  color: #991b1b;
+  border-color: var(--red);
+}
+
+.tutorial-instruction {
+  margin: 0;
+  font-size: 0.83rem;
+  line-height: 1.55;
+  color: var(--text);
+}
+
+.tutorial-feedback {
+  margin-top: 7px;
+  padding: 6px 10px;
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--red) 14%, var(--bg));
+  border: 1px solid color-mix(in srgb, var(--red) 55%, transparent);
+  color: var(--text);
+  font-size: 0.78rem;
+  font-weight: 600;
+  line-height: 1.45;
+  animation: tutorial-shake 280ms ease;
+}
+
+@keyframes tutorial-shake {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  25% {
+    transform: translateX(-5px);
+  }
+  75% {
+    transform: translateX(5px);
+  }
+}
+
+.tutorial-popup-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 9px;
+}
+
+/* ---------- 本体上のターゲットハイライト ---------- */
+
+.device.tutorial-active .slot.tutorial-dim-slot {
+  opacity: 0.52;
+  transition: opacity 180ms ease;
+}
+
+.device.tutorial-active .slot.tutorial-target-slot {
+  box-shadow: inset 0 0 0 0.65cqw var(--focus);
+  z-index: 2;
+}
+
+.plate-label.tutorial-target-plate {
+  background: var(--focus);
+  color: var(--ink);
+  padding: 0.1cqw 1cqw;
+  border-radius: 0.6cqw;
+  box-shadow: 0 0 0 0.3cqw #b45309;
+}
+
+.cell.tutorial-target-cell {
+  position: relative;
+  background: #fde68a;
+  box-shadow: inset 0 0 0 0.55cqw #d97706;
+  z-index: 2;
+}
+
+.cell.tutorial-target-cell.tutorial-target-black .num-black {
+  font-weight: 800;
+  transform: scale(1.08);
+}
+
+.cell.tutorial-target-cell.tutorial-target-black .num-red {
+  opacity: 0.3;
+}
+
+.cell.tutorial-target-cell.tutorial-target-red .num-red {
+  background: var(--red);
+  color: #fff;
+  padding: 0.15cqw 0.65cqw;
+  border-radius: 0.5cqw;
+  transform: scale(1.08);
+}
+
+.cell.tutorial-target-cell.tutorial-target-red .num-black {
+  opacity: 0.4;
+}
+
+.cell.tutorial-target-cell::after {
+  content: '↓';
+  position: absolute;
+  right: 0.3cqw;
+  top: 50%;
+  translate: 0 -50%;
+  font-size: 2.8cqw;
+  font-weight: 900;
+  color: #b45309;
+  pointer-events: none;
+  animation: tutorial-arrow-bounce 900ms ease-in-out infinite;
+}
+
+.cell.tutorial-target-cell.tutorial-target-zero::after {
+  content: '●';
+  font-size: 2.2cqw;
+}
+
+.sub-mark.tutorial-target-mark {
+  color: var(--focus);
+  filter: drop-shadow(0 0 0.8cqw rgb(246 195 68 / 0.95));
+  transform: scale(1.22);
+}
+
+.lever.tutorial-target-lever {
+  background: #fde68a;
+  box-shadow:
+    0 0 0 0.7cqw #d97706,
+    0 0 2.4cqw rgb(246 195 68 / 0.9);
+}
+
+.lever.tutorial-target-lever::after {
+  content: '↓';
+  position: absolute;
+  left: 50%;
+  top: -4.2cqw;
+  translate: -50% 0;
+  font-size: 3.4cqw;
+  font-weight: 900;
+  color: var(--focus);
+  text-shadow: 0 0.2cqw 0.6cqw rgb(0 0 0 / 0.7);
+  pointer-events: none;
+  animation: tutorial-arrow-bounce 900ms ease-in-out infinite;
+}
+
+@keyframes tutorial-arrow-bounce {
+  0%,
+  100% {
+    transform: translateY(-12%);
+  }
+  50% {
+    transform: translateY(18%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tutorial-feedback,
+  .cell.tutorial-target-cell::after,
+  .lever.tutorial-target-lever::after {
+    animation: none;
+  }
+}

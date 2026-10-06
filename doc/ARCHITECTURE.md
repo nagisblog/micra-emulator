@@ -32,9 +32,11 @@ micra-emulator/
 │   ├── main.ts             # エントリポイント（全体レイアウト、状態連携、モーダル、キーボード、i18n）
 │   ├── core/
 │   │   ├── micra.ts        # UI非依存の純粋計算クラス Micra と補助関数
-│   │   └── micra.test.ts   # Vitest 単体テスト（足し算、補数引き算、桁上がり、リセット等）
+│   │   ├── micra.test.ts   # Vitest 単体テスト（足し算、補数引き算、桁上がり、リセット等）
+│   │   ├── tutorial.ts     # UI非依存のチュートリアル状態管理クラス TutorialSession とステップ定義
+│   │   └── tutorial.test.ts# Vitest 単体テスト（足し算・引き算コース進行、誤操作拒否判定等）
 │   ├── i18n/
-│   │   ├── types.ts        # 多言語メッセージ型定義 (Messages, GuideSection)
+│   │   ├── types.ts        # 多言語メッセージ型定義 (Messages, GuideSection, TutorialMessages)
 │   │   ├── ja.ts           # 日本語文言辞書
 │   │   ├── en.ts           # 英語文言辞書
 │   │   └── index.ts        # 言語判定 (?lang= > localStorage > navigator.language)・保存
@@ -42,12 +44,14 @@ micra-emulator/
 │   │   ├── device.ts       # 本体 DOM と SVG（ラベル板、6本のキー、答え窓、レバー、Nagisaロゴ）の生成
 │   │   ├── slider.ts       # スライドキー1本分の Pointer Events ドラッグ・切り捨て・バネ復帰制御
 │   │   ├── drum.ts         # 答え窓ドラム1桁分の回転アニメーション制御
-│   │   └── lever.ts        # 右側面ゼロ戻しレバーのドラッグ・クリック制御
+│   │   ├── lever.ts        # 右側面ゼロ戻しレバーのドラッグ・クリック制御
+│   │   └── tutorial-ui.ts  # チュートリアルの吹き出しポップアップ・コース選択・本体ハイライト制御
 │   └── styles/
 │       ├── base.css        # CSS変数（カラーテーマ）・基本リセット
 │       ├── layout.css      # ヘッダー・フッター・言語切替・埋め込みレイアウト
 │       ├── modal.css       # モーダルダイアログ・説明コンテンツのスタイル
-│       └── device.css      # ミックラー加算機本体（cqw 座標系）のスタイル
+│       ├── device.css      # ミックラー加算機本体（cqw 座標系）のスタイル
+│       └── tutorial.css    # チュートリアル吹き出しポップアップ・ターゲット強調のスタイル
 ├── index.html
 ├── package.json
 ├── tsconfig.json
@@ -77,7 +81,7 @@ micra-emulator/
 - **ドラムの描画 (`Drum`)**:
   - 各ドラムの `.reel` には `0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 0` の **11個** の `<span>` が縦に並んでおり、`pos mod 10` を `translateY((-m / 11) * 100%)` で表示することで、`9 → 0` の境界でも逆戻りせず滑らかに順回転します。
 
-### 3.3 本体座標系とレスポンシブ設計 (`src/ui/device.ts`, `src/styles/micra.css`)
+### 3.3 本体座標系とレスポンシブ設計 (`src/ui/device.ts`, `src/styles/device.css`)
 - `.device` 要素に `aspect-ratio: 100 / 147` と `container-type: inline-size` を指定しています。
 - 本体内部のすべてのパーツ（ラベル板、ネジ、スロット、セル高さ `6cqw`、答え窓、レバー等）のサイズ・座標を **`cqw`（コンテナ幅の 1%）** で統一しています。
 - 6本の列の中心 X 座標は `COLUMN_CX = [13.5, 28.1, 42.7, 57.3, 71.9, 86.5]`（単位 `cqw`）で定義され、CSS カスタムプロパティ `--cx` を介してラベル・スロット・答え窓の水平位置が完全に一致するよう配置されています。
@@ -88,19 +92,13 @@ micra-emulator/
 - `pointermove` 時の移動量 `dy` を `[0, grabbed * pitch]` にクランプして `translateY` でキーを動かします。
 - 現在の段数 `steps` は `Math.min(grabbed, Math.floor(px / pitch + 1e-3))` で算出します。これにより、**途中で離した場合は通過済みの段数（切り捨て）** が `onCommit(index, steps)` に渡されます。
 
----
-
-## 4. 次の機能（チュートリアル）の実装ガイド
-
-引き継ぎ後に「チュートリアル / Tutorial」機能を実装する際は、以下のフックポイントを利用すると既存の構造を壊さずに実装できます。
-
-1. **DOM 要素の取得 (`DeviceRefs`)**:
-   - `device.slots[colIndex]` で各桁のスロット、`device.strips[colIndex].querySelector('.cell[data-n="..."]')` で特定の数字セル、`device.lever` でゼロ戻しレバーの DOM 要素を取得できます。
-   - ※ 赤数字 $r$ を案内したい場合のセルは `data-n="${9 - r}"` である点に注意してください（例：赤の `7` は黒の `2` のセル `data-n="2"`）。
-2. **イベントフック (`src/main.ts`)**:
-   - スライドキー操作完了時は `SliderKey` の `onCommit(index, steps)` が呼ばれます。
-   - ゼロ戻し完了時は `reset()` 関数が呼ばれます。
-   - ここにチュートリアルのステップ進行判定（例：`tutorial.onAction({ type: 'pull', index, steps })` / `tutorial.onAction({ type: 'reset' })`）を差し込むだけで連動できます。
-3. **文言の追加 (`src/i18n/`)**:
-   - `src/i18n/types.ts` の `tutorialPlaceholder` をチュートリアル用のデータ構造に置き換え、`ja.ts` / `en.ts` に日英テキストを追加してください。
+### 3.5 チュートリアル設計 (`src/core/tutorial.ts`, `src/ui/tutorial-ui.ts`)
+- **純粋状態管理 (`TutorialSession`)**:
+  - 足し算コース（`3456 + 2060 = 5516`）と引き算コース（`12500 - 7890 = 4610`）のステップ列を管理します。開始時に答え窓が `0` でない場合は先頭に `reset` ステップを自動追加します。
+  - `handleAction()` でユーザーの操作（桁・段数・リセット）を検証し、誤操作（違う桁・途中離し・引きすぎ等）の場合は `accepted: false` と理由を返します。
+  - 引き算の `sub-9`（拾の桁の赤 `9` ＝ 黒 `0`、0段）では、該当セルのタップや「次へ」ボタンでの進行に加え、そのまま次の `sub-10`（円の桁の赤 `0` ＝ 黒 `9`）を引いた場合も2ステップ同時進行として許容します。
+- **UI・ハイライト連携 (`TutorialController`)**:
+  - 本体上部の `.tutorial-popup` の吹き出しポインタ位置（`--pointer-x`）を対象スロットまたはゼロ戻しレバーの実座標に合わせて追従させます。
+  - 対象スロット（`.tutorial-target-slot`）、桁ラベル（`.tutorial-target-plate`）、数字セル（`.tutorial-target-cell`、黒強調または赤強調）、減算マーク（`.tutorial-target-mark`）、ゼロ戻しレバー（`.tutorial-target-lever`）をハイライト表示します。
+  - `onPullCommit` が `false` を返した際、`src/main.ts` 側で `micra.pull` をスキップして `renderDrums(null)` を呼ぶことで、ドラッグ中に動いたドラムを元の値へ巻き戻します。
 
