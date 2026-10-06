@@ -1,0 +1,70 @@
+:root {
+  --navy: #2c3649;
+  --navy-dark: #232b3b;
+  --slot: #161c28;
+  --rim: #e7dfc6;
+  --cream: #f3ecd9;
+  --cream-ledge: #d9ceb0;
+  --silver: #c9ced6;
+  --screw-line: #7b828d;
+  --ink: #1f1f22;
+  --red: #d8392d;
+  --drum: #ecebe5;
+  --focus: #f6c344;
+
+  --bg: #f4f0e6;
+  --text: #2a2a2e;
+  --muted: #6b6a66;
+  --accent: #2c3649;
+
+  color-scheme: light dark;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #15171c;
+    --text: #e6e6ea;
+    --muted: #9a9aa3;
+    --accent: #c9ced6;
+  }
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+[hidden] {
+  display: none !important;
+}
+
+html,
+body {
+  margin: 0;
+}
+
+body {
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Noto Sans JP', 'Hiragino Sans', 'Yu Gothic UI', system-ui, sans-serif;
+  -webkit-tap-highlight-color: transparent;
+}
+
+#app {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}

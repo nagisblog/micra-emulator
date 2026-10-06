@@ -1,0 +1,275 @@
+/* ---------- ミックラー加算機本体 ---------- */
+
+.stage {
+  /* 本体は 100 x 147 の比率。画面の幅・高さの両方に収まるようにする */
+  --dw: min(84vw, 400px, calc((100dvh - 190px) / 1.47));
+  padding-right: calc(var(--dw) * 0.1);
+  padding-left: calc(var(--dw) * 0.02);
+}
+
+body.embed .stage {
+  --dw: min(84vw, calc((100dvh - 24px) / 1.47));
+}
+
+.device {
+  position: relative;
+  width: max(var(--dw), 240px);
+  aspect-ratio: 100 / 147;
+  container-type: inline-size;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+}
+
+.device > *,
+.cover > * {
+  position: absolute;
+}
+
+.case {
+  inset: 0;
+  background: var(--rim);
+  border-radius: 6cqw;
+}
+
+.panel {
+  left: 1.8cqw;
+  right: 1.8cqw;
+  top: 1.8cqw;
+  height: 80cqw;
+  background: var(--navy);
+  border-radius: 4.6cqw 4.6cqw 0 0;
+}
+
+/* 桁ラベル板 */
+.plate {
+  left: 7cqw;
+  width: 86cqw;
+  top: 4.4cqw;
+  height: 5cqw;
+  background: var(--silver);
+  border-radius: 0.6cqw;
+}
+
+.plate-label {
+  position: absolute;
+  left: calc(var(--cx) * 1cqw - 7cqw);
+  transform: translateX(-50%);
+  white-space: nowrap;
+  top: 50%;
+  translate: 0 -50%;
+  font-family: 'Yu Mincho', 'Hiragino Mincho ProN', 'Noto Serif JP', serif;
+  font-weight: 700;
+  font-size: 3cqw;
+  color: var(--ink);
+}
+
+.screw {
+  width: 3cqw;
+  height: 3cqw;
+  translate: -50% -50%;
+}
+
+.screw svg,
+.sub-mark svg,
+.logo svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+/* スライドキー */
+.slot {
+  left: calc(var(--cx) * 1cqw - 5.5cqw);
+  width: 11cqw;
+  top: 12.6cqw;
+  height: 118cqw;
+  overflow: hidden;
+  background: var(--slot);
+  border-radius: 0.9cqw 0.9cqw 0 0;
+  outline: none;
+}
+
+.slot:focus-visible {
+  box-shadow: inset 0 0 0 0.7cqw var(--focus);
+}
+
+.strip {
+  position: absolute;
+  left: 0.7cqw;
+  right: 0.7cqw;
+  top: 0.4cqw;
+  background: var(--cream);
+  border-radius: 0.6cqw;
+  touch-action: none;
+  cursor: grab;
+  will-change: transform;
+}
+
+.strip.dragging {
+  cursor: grabbing;
+}
+
+.strip.returning {
+  transition: transform 220ms cubic-bezier(0.34, 1.4, 0.55, 1);
+}
+
+.cell {
+  height: 6cqw;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5cqw;
+  border-bottom: 0.7cqw solid var(--cream-ledge);
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+}
+
+.num-black {
+  font-size: 4.3cqw;
+  font-weight: 500;
+  color: var(--ink);
+}
+
+.num-red {
+  font-size: 3cqw;
+  font-weight: 800;
+  color: var(--red);
+}
+
+.tab {
+  height: 4.4cqw;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.tab::after {
+  content: '';
+  width: 5cqw;
+  height: 2.4cqw;
+  border-radius: 0.4cqw;
+  background: var(--cream-ledge);
+}
+
+/* 減算用の印 */
+.sub-mark {
+  left: 92.7cqw;
+  top: 61.6cqw;
+  width: 3.4cqw;
+  height: 4.8cqw;
+  color: var(--cream);
+}
+
+/* 下部カバー */
+.cover {
+  left: 0;
+  right: 0;
+  top: 77.5cqw;
+  bottom: 0;
+  background: var(--navy-dark);
+  border-radius: 1cqw 1cqw 6cqw 6cqw;
+  z-index: 3;
+}
+
+.window {
+  left: calc(var(--cx) * 1cqw - 3.8cqw);
+  top: 2.6cqw;
+  width: 7.6cqw;
+  height: 9.4cqw;
+  padding: 0.9cqw;
+  background: var(--slot);
+  border-radius: 0.9cqw;
+}
+
+.drum {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: var(--drum);
+  border-radius: 0.5cqw;
+}
+
+.drum::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    rgb(0 0 0 / 0.28),
+    transparent 30%,
+    transparent 70%,
+    rgb(0 0 0 / 0.28)
+  );
+  pointer-events: none;
+}
+
+.reel {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: 1100%;
+  will-change: transform;
+}
+
+.reel span {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: calc(100% / 11);
+  font-size: 5.2cqw;
+  font-weight: 700;
+  color: var(--ink);
+  font-variant-numeric: tabular-nums;
+}
+
+.logo {
+  left: 56cqw;
+  top: 52cqw;
+  width: 34cqw;
+  height: 8.5cqw;
+}
+
+/* ゼロ戻しレバー（右側面） */
+.lever-track {
+  left: 99.4cqw;
+  top: 80.5cqw;
+  width: 1.4cqw;
+  height: 15cqw;
+  background: var(--navy-dark);
+  border-radius: 0.7cqw;
+}
+
+.lever {
+  left: 99cqw;
+  top: 82cqw;
+  width: 9cqw;
+  height: 3.2cqw;
+  background: var(--silver);
+  border-radius: 0.6cqw 1.6cqw 1.6cqw 0.6cqw;
+  box-shadow: inset -1.6cqw 0 0 rgb(0 0 0 / 0.12);
+  cursor: grab;
+  touch-action: none;
+  outline: none;
+  z-index: 4;
+}
+
+.lever.dragging {
+  cursor: grabbing;
+}
+
+.lever.returning {
+  transition: transform 180ms ease-out;
+}
+
+.lever:focus-visible {
+  box-shadow: 0 0 0 0.6cqw var(--focus);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .strip.returning,
+  .lever.returning {
+    transition: none;
+  }
+}

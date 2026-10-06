@@ -1,0 +1,127 @@
+/* ---------- モーダル・説明コンテンツ ---------- */
+
+.modal {
+  border: 0;
+  padding: 0;
+  background: transparent;
+  color: var(--text);
+  max-width: min(92vw, 560px);
+  width: 100%;
+}
+
+.modal::backdrop {
+  background: rgb(0 0 0 / 0.55);
+}
+
+.modal-card {
+  background: var(--bg);
+  border: 1.5px solid color-mix(in srgb, var(--accent) 35%, transparent);
+  border-radius: 14px;
+  padding: 20px 22px;
+  box-shadow: 0 16px 40px rgb(0 0 0 / 0.35);
+}
+
+.modal-title {
+  margin: 0 0 12px;
+  font-size: 1.1rem;
+  font-weight: 700;
+}
+
+.modal-body {
+  margin: 0 0 18px;
+  font-size: 0.9rem;
+  line-height: 1.65;
+  color: var(--muted);
+}
+
+.guide-content {
+  max-height: min(68dvh, 520px);
+  overflow-y: auto;
+  padding-right: 6px;
+  margin-bottom: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.guide-section {
+  border-top: 1px solid color-mix(in srgb, var(--accent) 18%, transparent);
+  padding-top: 12px;
+}
+
+.guide-section:first-child {
+  border-top: 0;
+  padding-top: 2px;
+}
+
+.guide-section h3 {
+  margin: 0 0 6px;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.guide-section p {
+  margin: 0 0 8px;
+  font-size: 0.86rem;
+  line-height: 1.65;
+  color: var(--muted);
+}
+
+.guide-section p:last-child {
+  margin-bottom: 0;
+}
+
+.guide-example {
+  margin-top: 8px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--accent) 8%, transparent);
+  font-size: 0.84rem;
+  line-height: 1.6;
+}
+
+.guide-example-title {
+  font-weight: 700;
+  margin-bottom: 4px;
+  color: var(--text);
+}
+
+.guide-example ol {
+  margin: 0;
+  padding-left: 1.3rem;
+  color: var(--text);
+}
+
+.guide-example li + li {
+  margin-top: 4px;
+}
+
+.guide-note {
+  font-size: 0.8rem !important;
+  opacity: 0.85;
+}
+
+.modal-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.btn {
+  border: 1.5px solid var(--accent);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--accent);
+  font: inherit;
+  font-size: 0.85rem;
+  font-weight: 600;
+  padding: 6px 14px;
+  cursor: pointer;
+}
+
+.btn-primary {
+  background: var(--accent);
+  color: var(--bg);
+}

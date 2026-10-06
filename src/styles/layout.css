@@ -1,0 +1,115 @@
+/* ---------- ページ全体のレイアウト ---------- */
+
+.site-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px 12px;
+  padding: 12px 16px;
+}
+
+.site-header h1 {
+  margin: 0;
+  font-size: clamp(1rem, 3.2vw, 1.3rem);
+  font-weight: 700;
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.nav-btn {
+  border: 1.5px solid var(--accent);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--accent);
+  font: inherit;
+  font-size: 0.8rem;
+  font-weight: 500;
+  padding: 4px 12px;
+  cursor: pointer;
+}
+
+.nav-btn:hover {
+  background: color-mix(in srgb, var(--accent) 12%, transparent);
+}
+
+.lang-switch {
+  display: inline-flex;
+  border: 1.5px solid var(--accent);
+  border-radius: 999px;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.lang-switch button {
+  border: 0;
+  background: transparent;
+  color: var(--accent);
+  font: inherit;
+  font-size: 0.8rem;
+  padding: 4px 12px;
+  cursor: pointer;
+}
+
+.lang-switch button[aria-pressed='true'] {
+  background: var(--accent);
+  color: var(--bg);
+}
+
+.site-main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0 12px 12px;
+}
+
+.hint,
+.kbd-help {
+  margin: 4px 0 12px;
+  text-align: center;
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+
+.kbd-help {
+  margin-top: 16px;
+  font-size: 0.75rem;
+}
+
+@media (pointer: coarse) {
+  .kbd-help {
+    display: none;
+  }
+}
+
+.site-footer {
+  padding: 12px 16px 20px;
+  text-align: center;
+  font-size: 0.75rem;
+  color: var(--muted);
+}
+
+.site-footer p {
+  margin: 0;
+}
+
+.site-footer a {
+  color: inherit;
+}
+
+body.embed .site-header,
+body.embed .site-footer,
+body.embed .hint,
+body.embed .kbd-help {
+  display: none;
+}
+
+body.embed .site-main {
+  justify-content: center;
+  padding: 8px;
+}
