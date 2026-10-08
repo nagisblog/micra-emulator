@@ -1,5 +1,9 @@
 # ミックラー加算機 エミュレータ / Micra Adder Emulator
 
+**日本語** | [English](./README.en.md)
+
+**[ブラウザで試す（GitHub Pages）](https://nagisblog.github.io/micra-emulator/?lang=ja)**
+
 ミクラ精機の小型機械式加減算機「ミックラー加算機」（1960年ごろ、6桁）の動きをブラウザで再現した非公式エミュレータです。
 実機の紹介記事: https://www.nagisblog.com/posts/micra-addiator/
 
